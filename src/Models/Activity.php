@@ -9,16 +9,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Activity extends Model
 {
-    use HasUlids, SoftDeletes;
+    use HasUlids;
+    use SoftDeletes;
 
     protected $guarded = [];
-
-    protected function casts(): array
-    {
-        return [
-            'parameters' => 'array',
-        ];
-    }
 
     public function getConnectionName(): ?string
     {
@@ -50,5 +44,12 @@ class Activity extends Model
                 return __('activities.' . $attributes['type'], $params);
             },
         );
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'parameters' => 'array',
+        ];
     }
 }

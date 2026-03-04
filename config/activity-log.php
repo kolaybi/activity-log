@@ -3,7 +3,6 @@
 use KolayBi\ActivityLog\Models\Activity;
 
 return [
-
     /*
     |--------------------------------------------------------------------------
     | Activity Model
@@ -62,5 +61,4 @@ return [
     'queue' => [
         'connection' => 'sync',
     ],
-
 ];

@@ -2,6 +2,7 @@
 
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use KolayBi\ActivityLog\Models\Activity;
+use KolayBi\ActivityLog\Tests\Fixtures\TestStatus;
 
 uses(LazilyRefreshDatabase::class);
 
@@ -10,19 +11,19 @@ beforeEach(function () {
 });
 
 it('uses table name from config', function () {
-    expect((new Activity())->getTable())->toBe('activities');
+    expect(new Activity()->getTable())->toBe('activities');
 
     config(['kolaybi.activity-log.table' => 'custom_activities']);
 
-    expect((new Activity())->getTable())->toBe('custom_activities');
+    expect(new Activity()->getTable())->toBe('custom_activities');
 });
 
 it('uses connection from config', function () {
-    expect((new Activity())->getConnectionName())->toBe('testing');
+    expect(new Activity()->getConnectionName())->toBe('testing');
 
     config(['kolaybi.activity-log.connection' => 'custom']);
 
-    expect((new Activity())->getConnectionName())->toBe('custom');
+    expect(new Activity()->getConnectionName())->toBe('custom');
 });
 
 it('creates an activity record', function () {
@@ -30,7 +31,7 @@ it('creates an activity record', function () {
         'creator_id' => 'user-123',
         'tenant_id'  => 'tenant-456',
         'group'      => 'company',
-        'type'       => 'App\\Activities\\CompanyCreated',
+        'type'       => 'App\Activities\CompanyCreated',
         'parameters' => ['company_name' => 'Acme'],
     ]);
 
@@ -40,14 +41,14 @@ it('creates an activity record', function () {
         ->and($activity->creator_id)->toBe('user-123')
         ->and($activity->tenant_id)->toBe('tenant-456')
         ->and($activity->group)->toBe('company')
-        ->and($activity->type)->toBe('App\\Activities\\CompanyCreated')
+        ->and($activity->type)->toBe('App\Activities\CompanyCreated')
         ->and($activity->parameters)->toBe(['company_name' => 'Acme']);
 });
 
 it('allows nullable creator_id and tenant_id', function () {
     $activity = Activity::create([
         'group'      => 'system',
-        'type'       => 'App\\Activities\\SystemEvent',
+        'type'       => 'App\Activities\SystemEvent',
         'parameters' => [],
     ]);
 
@@ -76,7 +77,7 @@ it('resolves entry with enum parameter', function () {
         'type'       => 'status_changed',
         'parameters' => [
             'status' => [
-                'enum'     => \KolayBi\ActivityLog\Tests\Fixtures\TestStatus::class,
+                'enum'     => TestStatus::class,
                 'value'    => 'active',
                 'function' => 'label',
             ],
