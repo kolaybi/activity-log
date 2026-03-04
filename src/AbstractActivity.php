@@ -16,12 +16,11 @@ abstract class AbstractActivity
      */
     public function log(): PendingClosureDispatch|PendingDispatch
     {
-        $context = app(ActivityContextProvider::class);
-        $creatorId = $context->creatorId();
-        $tenantId = $context->tenantId();
+        $attributes = $this->toActivityAttributes();
+        $modelClass = config('kolaybi.activity-log.model');
 
-        $closure = function () use ($creatorId, $tenantId) {
-            $this->createRecord($creatorId, $tenantId);
+        $closure = static function () use ($modelClass, $attributes) {
+            self::createRecord($modelClass, $attributes);
         };
 
         return dispatch($closure)
@@ -30,19 +29,22 @@ abstract class AbstractActivity
     }
 
     /**
-     * Create the activity record in the database.
+     * Build the attribute array for the activity record.
+     *
+     * Context (creator, tenant) is resolved eagerly here,
+     * because Auth/Request won't be available inside queued closures.
      */
-    protected function createRecord(int|string|null $creatorId, int|string|null $tenantId): void
+    protected function toActivityAttributes(): array
     {
-        $modelClass = config('kolaybi.activity-log.model');
+        $context = app(ActivityContextProvider::class);
 
-        $modelClass::create([
-            'creator_id' => $creatorId,
-            'tenant_id'  => $tenantId,
+        return [
+            'creator_id' => $context->creatorId(),
+            'tenant_id'  => $context->tenantId(),
             'type'       => static::class,
             'group'      => static::GROUP->value,
             'parameters' => $this->parameters(),
-        ]);
+        ];
     }
 
     /**
@@ -59,6 +61,14 @@ abstract class AbstractActivity
     public static function with(mixed ...$args): static
     {
         return new static(...$args);
+    }
+
+    /**
+     * Persist the activity record.
+     */
+    protected static function createRecord(string $modelClass, array $attributes): void
+    {
+        $modelClass::create($attributes);
     }
 
     /**

@@ -2,6 +2,7 @@
 
 namespace KolayBi\ActivityLog\Models;
 
+use BackedEnum;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
@@ -37,7 +38,11 @@ class Activity extends Model
 
                 foreach ($params as $key => $param) {
                     if (is_array($param) && isset($param['enum'], $param['value'], $param['function'])) {
-                        $params[$key] = $param['enum']::tryFrom($param['value'])?->{$param['function']}();
+                        $enumClass = $param['enum'];
+
+                        if (is_string($enumClass) && enum_exists($enumClass) && is_a($enumClass, BackedEnum::class, true)) {
+                            $params[$key] = $enumClass::tryFrom($param['value'])?->{$param['function']}();
+                        }
                     }
                 }
 
