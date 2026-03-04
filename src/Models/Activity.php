@@ -33,8 +33,8 @@ class Activity extends Model
     public function entry(): Attribute
     {
         return new Attribute(
-            get: function (mixed $value, array $attributes) {
-                $params = json_decode($attributes['parameters'] ?? '{}', true) ?: [];
+            get: function () {
+                $params = $this->parameters ?? [];
 
                 foreach ($params as $key => $param) {
                     if (is_array($param) && isset($param['enum'], $param['value'], $param['function'])) {
@@ -46,7 +46,7 @@ class Activity extends Model
                     }
                 }
 
-                return __('activities.' . $attributes['type'], $params);
+                return __('activities.' . $this->type, $params);
             },
         );
     }
