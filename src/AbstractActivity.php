@@ -65,6 +65,8 @@ abstract class AbstractActivity
 
     /**
      * Persist the activity record.
+     *
+     * @param class-string $modelClass
      */
     protected static function createRecord(string $modelClass, array $attributes): void
     {
