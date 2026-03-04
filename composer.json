@@ -1,0 +1,43 @@
+{
+    "name": "kolaybi/activity-log",
+    "description": "Standalone activity logging package for Laravel — logs human-readable business events with i18n entry resolution.",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.4",
+        "laravel/framework": "^12.0"
+    },
+    "require-dev": {
+        "laravel/pint": "^1.27",
+        "orchestra/testbench": "^10.0",
+        "pestphp/pest": "^4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "KolayBi\\ActivityLog\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "KolayBi\\ActivityLog\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "KolayBi\\ActivityLog\\ActivityLogServiceProvider"
+            ]
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "scripts": {
+        "pint": "./vendor/bin/pint --dirty --parallel"
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
