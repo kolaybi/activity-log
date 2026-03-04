@@ -3,6 +3,14 @@
     "description": "Standalone activity logging package for Laravel — logs human-readable business events with i18n entry resolution.",
     "type": "library",
     "license": "MIT",
+    "keywords": [
+        "laravel",
+        "activity-log",
+        "audit",
+        "logging",
+        "events",
+        "i18n"
+    ],
     "require": {
         "php": "^8.4",
         "laravel/framework": "^12.0"
