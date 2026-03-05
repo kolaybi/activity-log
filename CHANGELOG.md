@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v1.1.0](https://github.com/kolaybi/activity-log/compare/v1.0.0...v1.1.0)  (2026-03-05)
+
+### Added
+- `migrations` config option (default `true`) to control automatic migration loading. Set to `false` when the consuming app provides its own custom migration.
+
 ## [v1.0.0](https://github.com/kolaybi/activity-log/commits/v1.0.0)  (2026-03-04)
 
 ### Added
