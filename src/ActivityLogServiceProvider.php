@@ -21,7 +21,9 @@ class ActivityLogServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
+        if (config('kolaybi.activity-log.migrations', true)) {
+            $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
+        }
 
         $this->publishesMigrations([
             __DIR__ . '/../database/migrations' => database_path('migrations'),
