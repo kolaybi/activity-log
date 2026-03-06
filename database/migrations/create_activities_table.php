@@ -9,11 +9,14 @@ return new class () extends Migration {
     {
         Schema::connection(config('kolaybi.activity-log.connection'))
             ->create(config('kolaybi.activity-log.table', 'activities'), function (Blueprint $table) {
+                $creatorColumn = config('kolaybi.activity-log.columns.creator', 'creator_id');
+                $tenantColumn = config('kolaybi.activity-log.columns.tenant', 'tenant_id');
+
                 $table->ulid('id')->primary();
                 $table->timestamps();
                 $table->softDeletes();
-                $table->string('creator_id')->nullable()->index();
-                $table->string('tenant_id')->nullable()->index();
+                $table->string($creatorColumn)->nullable()->index();
+                $table->string($tenantColumn)->nullable()->index();
                 $table->string('group')->index();
                 $table->string('type')->index();
                 $table->json('parameters');

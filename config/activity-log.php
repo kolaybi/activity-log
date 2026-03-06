@@ -50,6 +50,22 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Column Names
+    |--------------------------------------------------------------------------
+    |
+    | Customize column names used for creator and tenant identification.
+    | Useful when your schema uses different naming conventions
+    | (e.g. 'company_id' instead of 'tenant_id').
+    |
+    */
+
+    'columns' => [
+        'creator' => 'creator_id',
+        'tenant'  => 'tenant_id',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Run Migrations
     |--------------------------------------------------------------------------
     |

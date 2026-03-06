@@ -38,12 +38,15 @@ abstract class AbstractActivity
     {
         $context = app(ActivityContextProvider::class);
 
+        $creatorColumn = config('kolaybi.activity-log.columns.creator', 'creator_id');
+        $tenantColumn = config('kolaybi.activity-log.columns.tenant', 'tenant_id');
+
         return [
-            'creator_id' => $context->creatorId(),
-            'tenant_id'  => $context->tenantId(),
-            'type'       => static::class,
-            'group'      => static::GROUP->value,
-            'parameters' => $this->parameters(),
+            $creatorColumn => $context->creatorId(),
+            $tenantColumn  => $context->tenantId(),
+            'type'         => static::class,
+            'group'        => static::GROUP->value,
+            'parameters'   => $this->parameters(),
         ];
     }
 
