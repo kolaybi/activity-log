@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v1.2.0](https://github.com/kolaybi/activity-log/compare/v1.1.0...v1.2.0)  (2026-03-06)
+
+### Added
+- Configurable `columns.creator` and `columns.tenant` options to customize the creator and tenant column names used by the package.
+
 ## [v1.1.0](https://github.com/kolaybi/activity-log/compare/v1.0.0...v1.1.0)  (2026-03-05)
 
 ### Added
