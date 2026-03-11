@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v1.3.0](https://github.com/kolaybi/activity-log/compare/v1.2.0...v1.3.0)  (2026-03-11)
+
+### Added
+- `withoutTenant()` fluent method on `AbstractActivity` to bypass tenant logging per invocation.
+- `shouldLogTenant()` overridable method on `AbstractActivity` to permanently disable tenant logging for specific activity types.
+
 ## [v1.2.0](https://github.com/kolaybi/activity-log/compare/v1.1.0...v1.2.0)  (2026-03-06)
 
 ### Added
