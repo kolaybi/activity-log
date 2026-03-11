@@ -5,6 +5,7 @@ use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use KolayBi\ActivityLog\Contracts\ActivityContextProvider;
 use KolayBi\ActivityLog\Models\Activity;
 use KolayBi\ActivityLog\Tests\Fixtures\TestConcreteActivity;
+use KolayBi\ActivityLog\Tests\Fixtures\TestTenantFreeActivity;
 
 uses(LazilyRefreshDatabase::class);
 
@@ -186,4 +187,83 @@ it('createRecord persists via the given model class', function () {
     expect($activity)->not->toBeNull()
         ->and($activity->creator_id)->toBe('user-42')
         ->and($activity->group)->toBe('testing');
+});
+
+it('sets tenant_id to null when withoutTenant() is called while preserving creator', function () {
+    $customProvider = new class () implements ActivityContextProvider {
+        public function creatorId(): string
+        {
+            return 'user-abc';
+        }
+
+        public function tenantId(): string
+        {
+            return 'tenant-xyz';
+        }
+    };
+
+    app()->instance(ActivityContextProvider::class, $customProvider);
+
+    TestConcreteActivity::with('test-name', 'test-value')->withoutTenant()->log();
+
+    $activity = Activity::first();
+
+    expect($activity)->not->toBeNull()
+        ->and($activity->creator_id)->toBe('user-abc')
+        ->and($activity->tenant_id)->toBeNull();
+});
+
+it('sets tenant_id to null when shouldLogTenant() returns false in concrete class', function () {
+    $customProvider = new class () implements ActivityContextProvider {
+        public function creatorId(): string
+        {
+            return 'user-abc';
+        }
+
+        public function tenantId(): string
+        {
+            return 'tenant-xyz';
+        }
+    };
+
+    app()->instance(ActivityContextProvider::class, $customProvider);
+
+    TestTenantFreeActivity::with('test-name', 'test-value')->log();
+
+    $activity = Activity::first();
+
+    expect($activity)->not->toBeNull()
+        ->and($activity->creator_id)->toBe('user-abc')
+        ->and($activity->tenant_id)->toBeNull();
+});
+
+it('builds activity attributes with null tenant when withoutTenant() is called', function () {
+    $customProvider = new class () implements ActivityContextProvider {
+        public function creatorId(): string
+        {
+            return 'user-99';
+        }
+
+        public function tenantId(): string
+        {
+            return 'tenant-88';
+        }
+    };
+
+    app()->instance(ActivityContextProvider::class, $customProvider);
+
+    $activity = TestConcreteActivity::with('my-name', 'my-value')->withoutTenant();
+    $reflection = new ReflectionMethod($activity, 'toActivityAttributes');
+    $attributes = $reflection->invoke($activity);
+
+    expect($attributes)->toBe([
+        'creator_id' => 'user-99',
+        'tenant_id'  => null,
+        'type'       => TestConcreteActivity::class,
+        'group'      => 'testing',
+        'parameters' => [
+            'name'  => 'my-name',
+            'value' => 'my-value',
+        ],
+    ]);
 });
