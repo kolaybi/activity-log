@@ -8,6 +8,8 @@ use KolayBi\ActivityLog\Contracts\ActivityContextProvider;
 
 abstract class AbstractActivity
 {
+    private bool $withoutTenant = false;
+
     /**
      * Log this activity. Dispatches record creation as a queued closure.
      *
@@ -29,6 +31,27 @@ abstract class AbstractActivity
     }
 
     /**
+     * Bypass tenant logging — sets tenant_id to null for this activity.
+     */
+    public function withoutTenant(): static
+    {
+        $this->withoutTenant = true;
+
+        return $this;
+    }
+
+    /**
+     * Whether to log the tenant for this activity.
+     *
+     * Override in concrete classes to permanently disable tenant logging.
+     * The default implementation respects the withoutTenant() fluent call.
+     */
+    protected function shouldLogTenant(): bool
+    {
+        return ! $this->withoutTenant;
+    }
+
+    /**
      * Build the attribute array for the activity record.
      *
      * Context (creator, tenant) is resolved eagerly here,
@@ -43,7 +66,7 @@ abstract class AbstractActivity
 
         return [
             $creatorColumn => $context->creatorId(),
-            $tenantColumn  => $context->tenantId(),
+            $tenantColumn  => $this->shouldLogTenant() ? $context->tenantId() : null,
             'type'         => static::class,
             'group'        => static::GROUP->value,
             'parameters'   => $this->parameters(),
