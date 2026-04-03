@@ -6,6 +6,7 @@ use BackedEnum;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use KolayBi\ActivityLog\Contracts\ActivityParameterResolver;
 
@@ -28,6 +29,14 @@ class Activity extends Model
     public function getTable(): string
     {
         return config('kolaybi.activity-log.table', 'activities');
+    }
+
+    public function creator(): BelongsTo
+    {
+        return $this->belongsTo(
+            config('auth.providers.users.model'),
+            config('kolaybi.activity-log.columns.creator'),
+        );
     }
 
     /**
