@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
+use KolayBi\ActivityLog\Contracts\ActivityParameterResolver;
 use KolayBi\ActivityLog\Models\Activity;
 use KolayBi\ActivityLog\Tests\Fixtures\TestStatus;
 
@@ -69,6 +70,60 @@ it('resolves entry from translation', function () {
     ], 'en');
 
     expect($activity->entry)->toBe('Acme Corp was updated');
+});
+
+it('resolves entry with predefined parameters from resolver', function () {
+    $resolver = new class () implements ActivityParameterResolver {
+        public function __invoke(Activity $activity): array
+        {
+            return ['app_name' => 'KolayBi'];
+        }
+    };
+
+    app()->instance(ActivityParameterResolver::class, $resolver);
+
+    $activity = Activity::create([
+        'group'      => 'company',
+        'type'       => 'company_created',
+        'parameters' => ['company_name' => 'Acme Corp'],
+    ]);
+
+    app('translator')->addLines([
+        'activities.company_created' => ':company_name was created on :app_name',
+    ], 'en');
+
+    expect($activity->entry)->toBe('Acme Corp was created on KolayBi');
+});
+
+it('gives activity parameters precedence over predefined parameters', function () {
+    $resolver = new class () implements ActivityParameterResolver {
+        public function __invoke(Activity $activity): array
+        {
+            return ['name' => 'predefined'];
+        }
+    };
+
+    app()->instance(ActivityParameterResolver::class, $resolver);
+
+    $activity = Activity::create([
+        'group'      => 'company',
+        'type'       => 'greeting',
+        'parameters' => ['name' => 'activity'],
+    ]);
+
+    app('translator')->addLines([
+        'activities.greeting' => 'Hello :name',
+    ], 'en');
+
+    expect($activity->entry)->toBe('Hello activity');
+});
+
+it('has a creator belongs-to relation', function () {
+    $activity = new Activity();
+    $relation = $activity->creator();
+
+    expect($relation)->toBeInstanceOf(\Illuminate\Database\Eloquent\Relations\BelongsTo::class)
+        ->and($relation->getForeignKeyName())->toBe(config('kolaybi.activity-log.columns.creator'));
 });
 
 it('resolves entry with enum parameter', function () {

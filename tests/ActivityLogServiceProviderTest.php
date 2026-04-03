@@ -1,7 +1,10 @@
 <?php
 
 use KolayBi\ActivityLog\Contracts\ActivityContextProvider;
+use KolayBi\ActivityLog\Contracts\ActivityParameterResolver;
 use KolayBi\ActivityLog\Contracts\NullContextProvider;
+use KolayBi\ActivityLog\Contracts\NullParameterResolver;
+use KolayBi\ActivityLog\Models\Activity;
 
 it('merges config', function () {
     $config = config('kolaybi.activity-log');
@@ -38,4 +41,26 @@ it('binds custom context provider when configured', function () {
 
     expect($provider->creatorId())->toBe('custom-user')
         ->and($provider->tenantId())->toBe('custom-tenant');
+});
+
+it('binds NullParameterResolver when no resolver is configured', function () {
+    $resolver = app(ActivityParameterResolver::class);
+
+    expect($resolver)->toBeInstanceOf(NullParameterResolver::class);
+});
+
+it('binds custom parameter resolver when configured', function () {
+    $customResolver = new class () implements ActivityParameterResolver {
+        public function __invoke(Activity $activity): array
+        {
+            return ['custom' => 'value'];
+        }
+    };
+
+    config(['kolaybi.activity-log.parameter_resolver' => $customResolver::class]);
+    app()->forgetInstance(ActivityParameterResolver::class);
+
+    $resolver = app(ActivityParameterResolver::class);
+
+    expect($resolver(new Activity()))->toBe(['custom' => 'value']);
 });

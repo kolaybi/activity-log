@@ -30,6 +30,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Parameter Resolver
+    |--------------------------------------------------------------------------
+    |
+    | The class that resolves additional predefined parameters for activity
+    | entries. Must implement KolayBi\ActivityLog\Contracts\ActivityParameterResolver.
+    | When null, NullParameterResolver is used (returns empty array).
+    |
+    */
+
+    'parameter_resolver' => null,
+
+    /*
+    |--------------------------------------------------------------------------
     | Database Connection
     |--------------------------------------------------------------------------
     |
