@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v1.4.0](https://github.com/kolaybi/activity-log/compare/v1.3.1...v1.4.0)  (2026-04-04)
+
+### Added
+- `ActivityParameterResolver` contract for extensible entry formatting. Consuming apps bind their own resolver via config instead of overriding the model `entry()` accessor.
+- `NullParameterResolver` default implementation (returns parameters as-is).
+- `creator` relation on `Activity` model using auth config for the User model and the package's `columns.creator` config for the foreign key.
+
+## [v1.3.1](https://github.com/kolaybi/activity-log/compare/v1.3.0...v1.3.1)  (2026-04-02)
+
+### Added
+- Laravel 13 support.
+
 ## [v1.3.0](https://github.com/kolaybi/activity-log/compare/v1.2.0...v1.3.0)  (2026-03-11)
 
 ### Added
